@@ -1,0 +1,56 @@
+#include<stdio.h>
+#include<string.h>
+#define max_ 100001
+#define max(a,b) a>b?a:b
+
+int M;//指当前为第几条边
+int dp[max_][2];//动态规划抽象出来的数组[i][1]为选中i节点时的最大值，[i][0]表示不选i节点的最大值；
+int head[max_];//head[i]表示第i个节点的最后一个输入的孩子的位置；
+
+struct edge
+{
+    int to;//当前输入边的后面的节点的值；
+    int before;//同起点的上一条边的位置（相当于指针）
+}Edge[max_*2];//树相当于无向图，一条边记录两次；
+
+void add(int from, int to)//构建每一条边的信息
+{
+    Edge[M].to =  to;
+    Edge[M].before = head[from];//同from（相当于同起点）所记录的上一条边的位置
+    head[from] = M++;//head[from]的值为当前的边数
+}
+
+void dfs(int from, int pre)
+{
+    int i;
+    for(i=head[from]; i!=-1; i=Edge[i].before)//与输入顺序相反进行查找；i表示当前所在的位置；
+    {
+        if(pre == Edge[i].to)//当深度搜索到叶子节点时，叶子节点的下一个孩子是它本身的父亲（无向图第二次输入过）
+        continue;//叶子节点的dp[][]在主函数中已经付过值；
+        dfs(Edge[i].to,from);
+        dp[from][0] += max(dp[Edge[i].to][0],dp[Edge[i].to][1]);//动态方程，从倒数第二层开始加
+        dp[from][1] += dp[Edge[i].to][0];
+    }
+}
+
+int main ( )
+{
+    memset(head,-1,sizeof(head));//让每个顶点第一个孩子的before为-1，作为结束标志
+    int n,i;
+    int result;
+    scanf("%d",&n);
+    for(i=1; i<=n; i++)
+    scanf("%d",&dp[i][1]);
+    for(i=1; i<n; i++)
+    {
+        int from;
+        int to;
+        scanf("%d%d",&from,&to);
+        add(from,to);
+        add(to,from);
+    }
+    dfs(1,0);
+    result = max(dp[1][0],dp[1][1]);
+    printf("%d",result);
+    return 0;
+}
