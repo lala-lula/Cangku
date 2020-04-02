@@ -1,0 +1,129 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#define max(a,b) a>b?1:0
+#define INT_MAX 2147483647
+#define MAX_ 200001
+
+int m,n;
+int head[MAX_];
+int M;
+int minLenth[MAX_];
+
+struct edge
+{
+    int to;
+    int before;
+    int weight;
+}Edge[MAX_];
+
+typedef struct qnode
+{
+    int data;
+    struct qnode *next;
+}QNode,*QueuePtr;
+
+typedef struct queue
+{
+    QueuePtr front;
+    QueuePtr rear;
+}Queue;
+
+void initLenth(int minLenth[])
+{
+    int i;
+    for(i = 1; i<=n; i++)
+    {
+        if(i==1)
+        minLenth[i] = 0;
+        else
+        minLenth[i] = INT_MAX;
+    }
+}
+
+void add(int from, int to, int weight)
+{
+    Edge[M].to = to;
+    Edge[M].weight = weight;
+    Edge[M].before = head[from];
+    head[from] = M++;
+}
+
+int isEmpty(Queue Q)
+{
+    if(Q.rear == Q.front)
+    return 0;
+    else 
+    return 1;
+}
+
+void init(Queue &Q)
+{
+    QueuePtr q;
+    q = (QueuePtr)malloc(sizeof(QNode));
+    if(!q)
+    exit(-1);
+    Q.front = q;
+    Q.rear = Q.front;
+    Q.rear->next = NULL;
+}
+
+void EnQueue(Queue &Q, int e)
+{
+    QueuePtr q;
+    q = (QueuePtr)malloc(sizeof(QNode));
+    if(!q)
+    exit(-1);
+    q->data = e;
+    q->next = NULL;
+    Q.rear->next = q;
+    Q.rear = q;
+}
+
+void DeQueue(Queue &Q)
+{
+    if(!isEmpty(Q))
+    return ;
+    else
+    {
+        QueuePtr q;
+        q = Q.front->next;
+        Q.front->next = q->next;
+        if(q==Q.rear)
+        Q.front = Q.rear;
+    } 
+}
+
+int main ( )
+{
+    int i;
+    memset(head,-1,sizeof(head));
+    scanf("%d%d",&m,&n);
+    for(i = 0; i<m; i++)
+    {
+        int from,to ,weight;
+        scanf("%d%d%d",&from,&to,&weight);
+        add(from,to,weight);
+    }
+    Queue Q;
+    init(Q);
+    initLenth(minLenth);
+    EnQueue(Q,1);
+    while(isEmpty(Q))
+    {
+        for(i = head[Q.front->next->data]; i!=-1; i = Edge[i].before)
+        {
+            if(minLenth[Edge[i].to]>(minLenth[Q.front->next->data] + Edge[i].weight))
+            {
+                minLenth[Edge[i].to] = minLenth[Q.front->next->data] + Edge[i].weight;
+                EnQueue(Q,Edge[i].to);
+            }
+        }
+        DeQueue(Q);
+     }
+     for(i = 2; i<=m; i++)
+     {
+         printf("%d\n",minLenth[i]);
+     }
+     return 0;
+}
