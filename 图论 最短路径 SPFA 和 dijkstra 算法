@@ -1,9 +1,21 @@
+/**链式前向星作为存储图的结构，实现广度优先遍历时，需借助队列，先将起始点放入队列中，然后遍历的孩子节点，并将孩子节点入队，
+   然后取出队列中的第一个元素，遍历它的孩子节点，并入队，直到队列为空表示广度优先搜索结束。
+   
+   SPFA可以求求权值为负的最短路径问题，但是不能求负环问题（成环的各个边的权值和为负数），运用广度搜索的思想，遍历子孩子时，
+   并不是每个都插入队列，当孩子顶点的当前最路径minLenth[i]>它父节点的当前最短路径+该边对应的权值时，修改孩子节点minLenth[i]
+   的值，并将该孩子节点入队，重复此操作，直到队列为空。minLenth[i]表示起点到第i号节点的当前最短路径。
+   
+   dijkstra算法采用的是贪心算法的思想，先设两个顶点集，S，U，S表示已确定的最短路径的点集，U表示剩余的点集，遍历S中后入的顶
+   点i的孩子节点，若（minLenth[i]+边的权值（i->to））<minLenth[to],更新对应的minLenth[to]值，然后选出U点集中的最小minLenth[]
+   对应的点，加入是中，重复上述操作，直到遍历完所有顶点。
+**/
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #define max(a,b) a>b?1:0
 #define INT_MAX 2147483647
-#define MAX_ 200001
+#define MAX_ 200001i
 
 int m,n;
 int head[MAX_];
@@ -98,7 +110,7 @@ int main ( )
 {
     int i;
     memset(head,-1,sizeof(head));
-    scanf("%d%d",&m,&n);
+    scanf("%d%d",&n,&m);
     for(i = 0; i<m; i++)
     {
         int from,to ,weight;
@@ -121,7 +133,7 @@ int main ( )
         }
         DeQueue(Q);
      }
-     for(i = 2; i<=m; i++)
+     for(i = 2; i<=n; i++)
      {
          printf("%d\n",minLenth[i]);
      }
